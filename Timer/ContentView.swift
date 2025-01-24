@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppKit // NSSound를 사용하기 위해 추가
 
 struct ContentView: View {
     @State private var timeRemaining: Double = 0.0
@@ -13,6 +14,7 @@ struct ContentView: View {
     @State private var totalTime: Double = 0.0
     @State private var rotation: Double = 0.0
     @State private var selectedTime = Time(hours: 0, minutes: 0, seconds: 0)
+    @State private var hasBeeped: Bool = false // 비프음 울렸는지 여부
 
     var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -59,22 +61,20 @@ struct ContentView: View {
                 .bold()
                 .foregroundStyle(timeRemaining <= 5 ? .red : .white)
 
-            // 타이머 슬라이더
-            VStack {
-                Slider(value: Binding(
-                    get: { totalTime - timeRemaining }, // 전체 시간 - 남은 시간
-                    set: { newValue in
-                        timeRemaining = totalTime - newValue
-                    }
-                ), in: 0...totalTime) // 슬라이더의 최소값...최대값
-                .animation(.easeInOut, value: timeRemaining)
-
+            // 타이머 프로그레스 바
+            if totalTime > 0 {
+                ProgressView(value: totalTime - timeRemaining, total: totalTime)
+                    .progressViewStyle(LinearProgressViewStyle())
+                    .frame(height: 20)
+                    .animation(.easeInOut(duration: 0.5), value: timeRemaining)
                 HStack {
                     Text(formatTime(totalTime - timeRemaining))
                     Spacer()
                     Text(formatTime(timeRemaining))
                 }
             }
+            
+
 
             // Control buttons
             HStack(spacing: 40) {
@@ -93,7 +93,12 @@ struct ContentView: View {
                 }
 
                 Button(action: {
-                    resetTimer()
+                    isPlaying = false
+                    timeRemaining = 0
+                    totalTime = 0
+                    rotation = 0
+                    selectedTime = Time(hours: 0, minutes: 0, seconds: 0)
+                    hasBeeped = false // 초기화 시 비프음 울림 상태도 초기화
                 }) {
                     Image(systemName: "forward.fill")
                         .font(.largeTitle)
@@ -105,8 +110,11 @@ struct ContentView: View {
             if isPlaying && timeRemaining > 0 { // 현재 재생 중인지와 남은 시간이 0보다 큰지 확인
                 timeRemaining -= 1
                 rotation += 360 / totalTime // 전체 시간에 비례해서 회전
-            } else {
+                hasBeeped = false // 타이머가 작동 중일 때 비프음 상태 초기화
+            } else if timeRemaining == 0 && !hasBeeped {
                 isPlaying = false
+                NSSound.beep() // 시간이 00:00:00이 되었을 때 비프음 재생
+                hasBeeped = true // 비프음이 울렸음을 기록
             }
         }
     }
@@ -114,13 +122,15 @@ struct ContentView: View {
     // 타이머 시작
     private func startTimer() {
         if !isPlaying {
-            let totalSeconds = Double(selectedTime.hours * 3600 + selectedTime.minutes * 60 + selectedTime.seconds)
-            if totalSeconds > 0 {
-                totalTime = totalSeconds // 총 시간 설정
-                timeRemaining = totalSeconds // 남은 시간을 총 시간으로 초기화
-                isPlaying = true
-                rotation = 0
+            if totalTime == 0 {
+                let totalSeconds = Double(selectedTime.hours * 3600 + selectedTime.minutes * 60 + selectedTime.seconds)
+                if totalSeconds > 0 {
+                    totalTime = totalSeconds
+                    timeRemaining = totalSeconds
+                }
             }
+            isPlaying = true
+            rotation = 0
         } else {
             isPlaying = false
         }
@@ -131,6 +141,7 @@ struct ContentView: View {
         isPlaying = false
         timeRemaining = totalTime
         rotation = 0
+        hasBeeped = false // 초기화 시 비프음 울림 상태도 초기화
     }
 
     // HH:MM:SS 형식으로 포맷

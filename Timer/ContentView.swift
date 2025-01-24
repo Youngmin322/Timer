@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import AppKit // NSSound를 사용하기 위해 추가
+import AppKit
 
 struct ContentView: View {
     @State private var timeRemaining: Double = 0.0
@@ -29,7 +29,7 @@ struct ContentView: View {
             Image("Recode")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 400, height: 200)
+                .frame(width: 200, height: 100)
                 .rotationEffect(.degrees(rotation))
                 .animation(isPlaying ? .linear(duration: timeRemaining).repeatCount(1, autoreverses: false) : .default, value: rotation)
 
@@ -73,8 +73,6 @@ struct ContentView: View {
                     Text(formatTime(timeRemaining))
                 }
             }
-            
-
 
             // Control buttons
             HStack(spacing: 40) {
@@ -98,23 +96,23 @@ struct ContentView: View {
                     totalTime = 0
                     rotation = 0
                     selectedTime = Time(hours: 0, minutes: 0, seconds: 0)
-                    hasBeeped = false // 초기화 시 비프음 울림 상태도 초기화
+                    hasBeeped = false
                 }) {
                     Image(systemName: "forward.fill")
                         .font(.largeTitle)
                 }
             }
         }
-        .padding(40)
+        .padding(70)
         .onReceive(timer) { _ in
-            if isPlaying && timeRemaining > 0 { // 현재 재생 중인지와 남은 시간이 0보다 큰지 확인
+            if isPlaying && timeRemaining > 0 {
                 timeRemaining -= 1
-                rotation += 360 / totalTime // 전체 시간에 비례해서 회전
-                hasBeeped = false // 타이머가 작동 중일 때 비프음 상태 초기화
+                rotation += 360 / totalTime
+                hasBeeped = false
             } else if timeRemaining == 0 && !hasBeeped {
                 isPlaying = false
-                NSSound.beep() // 시간이 00:00:00이 되었을 때 비프음 재생
-                hasBeeped = true // 비프음이 울렸음을 기록
+                NSSound.beep()
+                hasBeeped = true
             }
         }
     }

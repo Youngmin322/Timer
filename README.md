@@ -5,6 +5,10 @@
   <img src="https://github.com/user-attachments/assets/44f86d46-8cd9-4ad9-883a-83d9d83fcdad" alt="Timer GIF">
 </p>
 
+## 사용 기술
+- Swift
+- SwiftUI
+
 ## 주요 기능
 
 ### ⏰ 시간 설정

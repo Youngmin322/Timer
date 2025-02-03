@@ -8,6 +8,7 @@
 ## 사용 기술
 - Swift
 - SwiftUI
+- AppKit
 
 ## 주요 기능
 

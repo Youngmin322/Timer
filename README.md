@@ -1,8 +1,8 @@
 Timer README
 =============
 음악 플레이어 디자인으로 제작한 맥용 타이머 프로그램입니다.
-<img width="681" alt="스크린샷 2025-02-03 오후 1 11 40" src="https://github.com/user-attachments/assets/408b69e9-1eeb-42aa-b92e-727cdbbc35ae" />
-<img width="654" alt="스크린샷 2025-02-03 오후 1 12 01" src="https://github.com/user-attachments/assets/7743e412-598f-405b-bd50-7f4349c24b92" />
+
+https://github.com/user-attachments/assets/fca08eb8-45c2-4640-969c-0b61fc473fa4
 
 프로젝트 소개
 ----------
